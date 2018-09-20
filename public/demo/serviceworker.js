@@ -1,5 +1,5 @@
 (function () {
-  "use strict";
+  'use strict'
   /* global importScripts */
   /* global self */
   /* global caches */
@@ -7,14 +7,14 @@
   /* global URL */
 
   // Cache name definitions
-  var cacheNameStatic = 'v1.1';
+  var cacheNameStatic = 'v1.1'
 
-  var currentCacheNames = [ cacheNameStatic ];
+  var currentCacheNames = [ cacheNameStatic ]
 
   var urls = [
     '/demo/',
     '/demo/login.html',
-    '/demo/register.html',  
+    '/demo/register.html',
     '/demo/css/envoydemo.css',
     '/demo/js/app.js',
     '/demo/js/index.js',
@@ -29,75 +29,69 @@
     'https://code.jquery.com/jquery-2.1.1.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js',
     'https://cdn.jsdelivr.net/pouchdb/5.4.4/pouchdb.min.js'
-  ];
-
+  ]
 
   // A new ServiceWorker has been registered
-  self.addEventListener("install", function (event) {
+  self.addEventListener('install', function (event) {
     event.waitUntil(
-      caches.delete(cacheNameStatic).then(function() {
-        return caches.open(cacheNameStatic);
+      caches.delete(cacheNameStatic).then(function () {
+        return caches.open(cacheNameStatic)
       }).then(function (cache) {
-        return cache.addAll(urls);
+        return cache.addAll(urls)
       })
-    );
-  });
-
+    )
+  })
 
   // A new ServiceWorker is now active
-  self.addEventListener("activate", function (event) {
+  self.addEventListener('activate', function (event) {
     event.waitUntil(
       caches.keys()
         .then(function (cacheNames) {
           return Promise.all(
             cacheNames.map(function (cacheName) {
               if (currentCacheNames.indexOf(cacheName) === -1) {
-                return caches.delete(cacheName);
+                return caches.delete(cacheName)
               }
             })
-          );
+          )
         })
-    );
-  });
-
+    )
+  })
 
   // The page has made a request
-  self.addEventListener("fetch", function (event) {
-    var requestURL = new URL(event.request.url);
-    
+  self.addEventListener('fetch', function (event) {
+    var requestURL = new URL(event.request.url)
+
     event.respondWith(
       caches.match(event.request)
         .then(function (response) {
-
           if (response) {
-            return response;
+            return response
           }
 
-          var fetchRequest = event.request.clone();
+          var fetchRequest = event.request.clone()
 
           return fetch(fetchRequest).then(
             function (response) {
-
-              var shouldCache = false;
+              var shouldCache = false
               if (urls.indexOf(requestURL.href) > -1 && response.status === 200) {
-                shouldCache = cacheNameStatic;
-              } 
+                shouldCache = cacheNameStatic
+              }
 
               if (shouldCache) {
-                var responseToCache = response.clone();
+                var responseToCache = response.clone()
 
                 caches.open(shouldCache)
                   .then(function (cache) {
-                    var cacheRequest = event.request.clone();
-                    cache.put(cacheRequest, responseToCache);
-                  });
+                    var cacheRequest = event.request.clone()
+                    cache.put(cacheRequest, responseToCache)
+                  })
               }
 
-              return response;
+              return response
             }
-          );
+          )
         })
-    );
-  });
-
-})();
+    )
+  })
+})()

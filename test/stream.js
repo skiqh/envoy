@@ -1,26 +1,24 @@
-'use strict';
-/* globals testUtils */
+/* eslint-env mocha */
+'use strict'
 
-var assert = require('assert'),
-  access = require('../lib/access'),
-  utils = require('../lib/utils');
+var access = require('../lib/access')
 
-describe('stream processing', function() {
+var utils = require('../lib/utils')
 
-  it('should handle blank lines', function(done) {
-    var fs = require('fs');
-    var tmp = '/tmp/out.txt';
-    var ws = fs.createWriteStream(tmp);
-    fs.createReadStream('./test/simulatedchanges.txt',{ encoding: 'utf8'})
+describe('stream processing', function () {
+  it('should handle blank lines', function (done) {
+    var fs = require('fs')
+    var tmp = '/tmp/out.txt'
+    var ws = fs.createWriteStream(tmp)
+    fs.createReadStream('./test/simulatedchanges.txt', { encoding: 'utf8' })
       .pipe(utils.liner())
       .pipe(access.authRemover())
       .pipe(ws)
-      .on('close', function() {
-        var output = fs.readFileSync(tmp, 'utf8');
+      .on('close', function () {
+        var output = fs.readFileSync(tmp, 'utf8')
         // this should parse as JSON
-        JSON.parse(output);
-        done();
-
-      });
-  });
-});
+        JSON.parse(output)
+        done()
+      })
+  })
+})
