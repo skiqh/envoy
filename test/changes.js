@@ -5,6 +5,11 @@
 var assert = require('assert')
 
 var PouchDB = require('pouchdb')
+const wait = (ms) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
 
 describe('changes', function () {
   it('sequence', function () {
@@ -21,6 +26,10 @@ describe('changes', function () {
       remote = new PouchDB(remoteURL)
       return remote.bulkDocs(docs)
     }).then(function () {
+      // allow some time for the changes feed to reach our Envoy server
+      // and for use to store the changes in sql-lite
+      return wait(1000)
+    }).then(function () {
       return remote.changes()
     }).then(function (response) {
       // testUtils.d('FIRST', response);
@@ -35,6 +44,8 @@ describe('changes', function () {
     }).then(function (response) {
       id = response.id
       rev = response.rev
+      return wait(1000)
+    }).then(function () {
       return remote.changes({ since: seq1 })
     }).then(function (response) {
       // testUtils.d('FINAL', response);
@@ -46,6 +57,7 @@ describe('changes', function () {
         'Rev of document should be the one that was updated')
     }).catch(function (error) {
       console.log(error)
+      assert(false)
     })
   })
 

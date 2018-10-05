@@ -13,7 +13,7 @@ var remote = null
 describe('adduser', function () {
   before(function () {
     var e = env.getCredentials()
-    remote = require('@cloudant/cloudant')('http://' + e.url)
+    remote = require('nano')('http://' + e.url)
   })
 
   it('add user successfully', function (done) {

@@ -46,14 +46,13 @@ describe('test single user sync', function () {
     var local = new PouchDB(dbs.local)
     var remote = null
     var docs = testUtils.makeDocs(5)
-
     return testUtils.createUser().then(function (remoteURL) {
       remote = new PouchDB(remoteURL)
       return remote.bulkDocs(docs)
     }).then(function () {
       return local.replicate.from(remote)
     }).then(function () {
-      return local.allDocs()
+      return local.allDocs({ include_docs: true })
     }).then(function (response) {
       assert.strictEqual(response.total_rows, docs.length)
     })

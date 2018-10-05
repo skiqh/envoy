@@ -65,7 +65,7 @@ var pull = function (silent) {
     $('#syncprogress').removeClass('hide')
   }
 
-  return db.pull(remote).then(function (info) {
+  return db.replicate.from(remote).then(function (info) {
     if (!silent) {
       $('#syncprogress').addClass('hide')
       var t = (ms() - start) / 1000
@@ -88,7 +88,7 @@ var push = function (silent) {
     $('#syncprogress').removeClass('hide')
   }
 
-  return db.push(remote).then(function (info) {
+  return db.replicate.to(remote).then(function (info) {
     if (!silent) {
       $('#syncprogress').addClass('hide')
       var t = (ms() - start) / 1000

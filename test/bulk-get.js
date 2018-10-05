@@ -26,7 +26,7 @@ describe('bulk_get', function () {
   })
 
   it('GET /db/_bulk_get', function (done) {
-    var cloudant = require('@cloudant/cloudant')(url)
+    var cloudant = require('nano')(url)
     var r = {
       method: 'get',
       db: app.dbName,

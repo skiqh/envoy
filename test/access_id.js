@@ -77,8 +77,8 @@ describe('misc utils tests', function () {
   })
 
   it('strip doc', function (done) {
-    var doc = { _id: 'bob-123', _rev: '1-123', a: 1, b: 2 }
-    var doc2 = { _id: '_local/bob-abc', _rev: '1-123', a: 1, b: 2 }
+    var doc = { _id: access.addOwnerId('123', 'bob'), _rev: '1-123', a: 1, b: 2 }
+    var doc2 = { _id: access.addOwnerId('_local/abc', 'bob'), _rev: '1-123', a: 1, b: 2 }
     var stripped = access.strip(doc)
     var stripped2 = access.strip(doc2)
     assert.strictEqual('123', stripped._id)

@@ -14,6 +14,29 @@ Envoy implements a subset of the CouchDB API and can be used as a replication ta
 
 Envoy includes a demo web app (hosted at the `/demo/` path) which demonstrates how a basic offline-first, progressive web app can be deployed that scales easily as users are added.
 
+## How does Cloudant Envoy work?
+
+Envoy is a web application that sits between your mobile Client and Cloudant:
+
+```
+
+  +---------------+            +---------------+            +---------------+
+  | Mobile device | <--------> |     Envoy     | <--------> |   Cloudant    |
+  +---------------+            +---------------+            +---------------+
+
+```
+
+The mobile device thinks it's talking to a Cloudant/CouchDB service, as Envoy emulates enough of the Cloudant API that it can accept pull or push replication API calls. Envoy's main job is to keep each mobile users' data separately. It does this by manipulating the
+document ids.
+
+- Mobile device tries to write document id `abc` to Cloudant
+- Envoy modifies the id to be `<hash of user id>:abc` - prefixing the id with the hash of the requesting user's id. This keeps each user's data sorted in the index and compartmentalised, so that other users can't access it.
+- If the mobile device requests document document `abc`, Envoy performs the same id manipulation and fetches `<hash of user id>:abc` instead.
+
+The effect of this is to allow many thousands of users to replicate with a single Cloudant database - the mobile device is under the illusion that is using a one-database-per-user architecture, but the server-side database is one database for all users.
+
+In addition to manipulating the document ids as they pass through, Envoy also keeps a SQLite database of changes. This allows the changes feed to be indexed by user, making it the speed of fetching the changes feed to remain constant as the size of the database grows.
+
 ### Why Cloudant Envoy?
 
 Database-per-user is a common pattern with CouchDB when there is a requirement for each application user to have their own set of documents which can be synced (e.g. to a mobile device or browser). On the surface, this is a good solution - Cloudant handles a large number of databases within a single installation very well. However, there are some problems:
@@ -26,12 +49,12 @@ Envoy aims to work around these problems by emulating database-per-user using a 
 ### When should I consider Envoy instead of a db-per-user pattern?
 
  * you want to perform queries across all per-user databases.
- * you want to replicate all user data to a remote target (e.g. another Cloudant account or IBM dashDB).
+ * you want to replicate all user data to a remote target (e.g. another Cloudant account).
  * you want to take advantage of additional HTTP features (e.g. compression) that are not natively supported by Cloudant.
 
 ### When should I consider Envoy instead of a single database with filtered replication?
 
-Cloudant Envoy is essentially performing a filtered replication under the hood (using the new Mango/Erlang native filtering supported in CouchDB 2.0). However, you may want to consider it if:
+Cloudant Envoy is essentially performing a filtered replication under the hood. However, you may want to consider it if:
 
  * you do not want to give all users read/write access to other users data.
  * you want to take advantage of additional HTTP features (e.g. compression) that are not natively supported by Cloudant.
@@ -226,8 +249,8 @@ Envoy supports a subset of the [CouchDB API](http://docs.couchdb.org/en/1.6.1/ap
 | POST /db/_bulk_docs | POST /db/id   | GET /_logout   |
 | POST /db/_bulk_get  | PUT /db/id    | OPTIONS /*     |
 | GET /db/_bulk_get   | DELETE /db/id |                |
-| GET /db/_changes    | GET /         | *Search*       |
-| POST /db/_revs_diff | GET /db       | POST /db/_find |
+| GET /db/_changes    | GET /         |                |
+| POST /db/_revs_diff | GET /db       |                |
 
 ## Envoy-specic APIs
 
@@ -310,7 +333,7 @@ Additional plugins can be selected using the `ENVOY_AUTH` environment variable. 
 
 The `default` access plugin stores the ownership of a document in the `_id` field of the document. If the owner of the document is `glynn`, then a document whose `_id` is `test` will actually get stored with an `_id` of 
 
-`3d07659e67fa5a86a06945ec4cdb2754c9fc67bf-test` 
+`3d07659e67fa5a86a06945ec4cdb2754c9fc67bf|test` 
 
 where 
 

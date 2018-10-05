@@ -47,7 +47,7 @@ describe('POST /all_docs', function () {
   })
 
   it('POST /db/_all_docs with no parameters', function (done) {
-    var cloudant = require('@cloudant/cloudant')(url1)
+    var cloudant = require('nano')(url1)
     var r = {
       method: 'post',
       db: app.dbName,
@@ -77,7 +77,7 @@ describe('POST /all_docs', function () {
       assert(!row.error)
     })
 
-    var cloudant = require('@cloudant/cloudant')(url1)
+    var cloudant = require('nano')(url1)
     var r = {
       method: 'post',
       db: app.dbName,

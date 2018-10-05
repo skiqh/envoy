@@ -24,7 +24,7 @@ describe('cors', function () {
         origin: fakedomain,
         'Access-Control-Request-Headers': fakeacl
       }
-      cloudant = require('@cloudant/cloudant')({ url: url, requestDefaults: { headers: headers } })
+      cloudant = require('nano')({ url: url, requestDefaults: { headers: headers } })
       remote = cloudant.db.use(app.dbName)
     })
   })
@@ -44,7 +44,7 @@ describe('cors', function () {
         origin: fakedomainChangedCors,
         'Access-Control-Request-Headers': fakeacl
       }
-      cloudant = require('@cloudant/cloudant')({ url: url, requestDefaults: { headers: headers } })
+      cloudant = require('nano')({ url: url, requestDefaults: { headers: headers } })
       remote = cloudant.db.use(app.dbName)
     })
   })

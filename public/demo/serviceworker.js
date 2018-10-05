@@ -7,7 +7,7 @@
   /* global URL */
 
   // Cache name definitions
-  var cacheNameStatic = 'v1.1'
+  var cacheNameStatic = 'v1.2'
 
   var currentCacheNames = [ cacheNameStatic ]
 
@@ -21,14 +21,13 @@
     '/demo/js/login.js',
     '/demo/js/mustache.js',
     '/demo/js/register.js',
-    '/demo/js/pouchdb-envoy.js',
     'https://fonts.googleapis.com/icon?family=Material+Icons',
     'https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/fonts/roboto/Roboto-Regular.woff2',
     'https://fonts.gstatic.com/s/materialicons/v17/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2',
     'https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css',
     'https://code.jquery.com/jquery-2.1.1.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js',
-    'https://cdn.jsdelivr.net/pouchdb/5.4.4/pouchdb.min.js'
+    'https://cdn.jsdelivr.net/npm/pouchdb@7.0.0/dist/pouchdb.min.js'
   ]
 
   // A new ServiceWorker has been registered

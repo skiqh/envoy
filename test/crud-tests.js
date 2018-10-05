@@ -232,7 +232,7 @@ describe('CRUD', function () {
   })
 
   it('update a document with POST /db', function (done) {
-    var cloudant = require('@cloudant/cloudant')(url1)
+    var cloudant = require('nano')(url1)
     var db = cloudant.db.use(app.dbName)
     var doc = { a: 1 }
 
@@ -249,7 +249,7 @@ describe('CRUD', function () {
   })
 
   it('update a document with bad POST /db', function (done) {
-    var cloudant = require('@cloudant/cloudant')(url1)
+    var cloudant = require('nano')(url1)
     var db = cloudant.db.use(app.dbName)
     var doc = { _bad: 1 }
 

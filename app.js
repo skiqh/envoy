@@ -3,7 +3,7 @@ module.exports = (opts) => {
   const app = module.exports = express()
   const compression = require('compression')
   const session = require('express-session')
-  const Cloudant = require('@cloudant/cloudant')
+  const Nano = require('nano')
   const bodyParser = require('body-parser')
   const async = require('async')
   const init = require('./lib/init')
@@ -14,17 +14,18 @@ module.exports = (opts) => {
   const cors = require('./lib/cors')
   const path = require('path')
   app.opts = require('./lib/env').getCredentials(opts)
-  const cloudant = new Cloudant(app.opts.couchHost)
+  const nano = Nano(app.opts.couchHost)
   const dbName = app.dbName = app.opts.databaseName
 
   // app meta data
-  app.db = cloudant.db.use(dbName)
-  app.usersdb = cloudant.db.use('_users')
+  app.db = nano.db.use(dbName)
+  app.usersdb = nano.db.use('_users')
   app.metaKey = 'com_cloudant_meta'
   app.events = ee
-  app.cloudant = cloudant
+  app.cloudant = nano
   app.serverURL = app.opts.couchHost
   app.auth = auth
+  app.spoolChangesProgress = 0
 
   // Setup the logging format
   if (app.opts.logFormat !== 'off') {
@@ -99,8 +100,9 @@ module.exports = (opts) => {
       init.verifyDB,
       init.verifyBulkGet,
       init.verifySecurityDoc,
-      init.installSystemViews,
-      auth.init
+      auth.init,
+      init.setupChangesDB,
+      init.spoolChanges
     ],
 
     (err, results) => {
@@ -116,7 +118,6 @@ module.exports = (opts) => {
 
       main()
 
-      ee.emit('listening')
       console.log('[OK]  main: Started app on', app.opts.url)
     }
   )

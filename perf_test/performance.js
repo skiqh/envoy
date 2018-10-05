@@ -4,8 +4,6 @@
 
 var PouchDB = require('pouchdb')
 
-var pouchdbEnvoy = require('pouchdb-envoy')
-
 var assert = require('assert')
 
 describe('performance', function () {
@@ -28,18 +26,6 @@ describe('performance', function () {
       var remote = new PouchDB(remoteURL, { ajax: { timeout: 1200000 } })
 
       return local.replicate.from(remote)
-        .then(function (info) {
-          assert.strictEqual(info.docs_written, 100)
-        })
-    })
-
-    it('pull replication with pouchdb-envoy', function () {
-      var remoteURL = testUtils.url('test', 'password')
-      PouchDB.plugin(pouchdbEnvoy)
-      var remote = new PouchDB(remoteURL, { ajax: { timeout: 1200000 } })
-      var local = new PouchDB(dbs.local)
-
-      return local.pull(remote)
         .then(function (info) {
           assert.strictEqual(info.docs_written, 100)
         })
