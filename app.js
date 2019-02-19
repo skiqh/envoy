@@ -90,7 +90,10 @@ module.exports = (opts) => {
       res.status(500).send({ error: 'internal_server_error', reason: 'server error' })
     })
 
-    app.listen(app.opts.port)
+    // if provided, start the express app on the given port
+    if(app.opts.port) {
+      app.listen(app.opts.port)
+    }
   }
 
   // Make sure that any init stuff is executed before
